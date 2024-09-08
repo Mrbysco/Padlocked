@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+issueTrackerURL="https://github.com/Mrbysco/ExampleMod/issues"
+license="MIT"
+
+[[mods]]
+modId="padlocked"
+version="${file.jarVersion}"
+displayName="Padlocked"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/ExampleMod"
+authors="Mrbysco"
+description='''
+Allow for locking chests using named trial keys
+'''
+[[dependencies.padlocked]]
+modId="minecraft"
+type="required"
+versionRange="[1.21,1.22)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.padlocked]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.1,)"
+ordering="NONE"
+side="BOTH"
