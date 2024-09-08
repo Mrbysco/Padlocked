@@ -177,6 +177,7 @@ if (System.getenv().MODRINTH_KEY) {
 
         }
     }
+    tasks.modrinth.dependsOn(build)
 }
 
 tasks.withType(JavaCompile).configureEach {
