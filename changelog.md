@@ -1,1 +1,1 @@
-* Initial build
+* Add ability to unlock by shift right-clicking a locked chest with the key
