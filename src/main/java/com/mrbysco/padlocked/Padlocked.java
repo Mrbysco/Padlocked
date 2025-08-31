@@ -35,7 +35,7 @@ public class Padlocked {
 
 	private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
 		if (event.getItemStack().is(KEYS) && event.getItemStack().has(DataComponents.CUSTOM_NAME)) {
-			String keyName = event.getItemStack().get(DataComponents.CUSTOM_NAME).getString();
+			String keyName = event.getItemStack().getOrDefault(DataComponents.CUSTOM_NAME, Component.empty()).getString();
 			final Player player = event.getEntity();
 			final Level level = event.getLevel();
 			final BlockPos pos = event.getPos();
