@@ -1,11 +1,13 @@
 package com.mrbysco.padlocked;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.advancements.critereon.DataComponentMatchers;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -26,9 +28,10 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
-import java.util.Objects;
+import java.util.function.Supplier;
 
 @Mod(Padlocked.MOD_ID)
 public class Padlocked {
@@ -36,7 +39,13 @@ public class Padlocked {
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final TagKey<Item> KEYS = TagKey.create(Registries.ITEM, modLoc("keys"));
 
+	public static final DeferredRegister<DataComponentPredicate.Type<?>> COMPONENT_PREDICATES = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_PREDICATE_TYPE, MOD_ID);
+
+	public static final Supplier<DataComponentPredicate.Type<CustomNamePredicate>> CUSTOM_NAME = COMPONENT_PREDICATES.register("custom_name", () -> new DataComponentPredicate.Type<>(CustomNamePredicate.CODEC));
+
 	public Padlocked(IEventBus eventBus, Dist dist, ModContainer container) {
+		COMPONENT_PREDICATES.register(eventBus);
+
 		NeoForge.EVENT_BUS.addListener(this::onRightClick);
 	}
 
@@ -67,10 +76,11 @@ public class Padlocked {
 	}
 
 	private static ItemPredicate getPredicate(ItemStack stack, HolderGetter<Item> itemLookup) {
+		Component customName = stack.get(DataComponents.CUSTOM_NAME);
 		return ItemPredicate.Builder.item()
 				.of(itemLookup, stack.getItem())
-				.hasComponents(DataComponentPredicate.builder()
-						.expect(DataComponents.CUSTOM_NAME, Objects.requireNonNull(stack.get(DataComponents.CUSTOM_NAME))).build())
+				.withComponents(DataComponentMatchers.Builder.components()
+						.partial(CUSTOM_NAME.get(), new CustomNamePredicate(customName)).build())
 				.build();
 	}
 
