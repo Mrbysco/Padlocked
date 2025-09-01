@@ -1,7 +1,10 @@
 package com.mrbysco.padlocked;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -9,9 +12,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,6 +27,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.slf4j.Logger;
+
+import java.util.Objects;
 
 @Mod(Padlocked.MOD_ID)
 public class Padlocked {
@@ -34,8 +41,9 @@ public class Padlocked {
 	}
 
 	private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-		if (event.getItemStack().is(KEYS) && event.getItemStack().has(DataComponents.CUSTOM_NAME)) {
-			String keyName = event.getItemStack().getOrDefault(DataComponents.CUSTOM_NAME, Component.empty()).getString();
+		if (event.getHand() != InteractionHand.MAIN_HAND) return;
+		ItemStack itemStack = event.getItemStack();
+		if (itemStack.is(KEYS) && itemStack.has(DataComponents.CUSTOM_NAME)) {
 			final Player player = event.getEntity();
 			final Level level = event.getLevel();
 			final BlockPos pos = event.getPos();
@@ -43,10 +51,12 @@ public class Padlocked {
 			if (blockEntity instanceof BaseContainerBlockEntity containerBlockEntity) {
 				LockCode code = containerBlockEntity.lockKey;
 				if (code == LockCode.NO_LOCK) {
-					containerBlockEntity.lockKey = new LockCode(keyName);
+					if (player.isShiftKeyDown()) return;
+					HolderGetter<Item> itemLookup = level.holderLookup(Registries.ITEM);
+					containerBlockEntity.lockKey = new LockCode(getPredicate(itemStack, itemLookup));
 					level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
 				} else {
-					if (player.isShiftKeyDown() && code.key().equals(keyName)) {
+					if (player.isShiftKeyDown() && code.unlocksWith(itemStack)) {
 						containerBlockEntity.lockKey = LockCode.NO_LOCK;
 						level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
 						player.displayClientMessage(Component.translatable("padlocked.message.unlocked", containerBlockEntity.getDisplayName()), true);
@@ -54,6 +64,14 @@ public class Padlocked {
 				}
 			}
 		}
+	}
+
+	private static ItemPredicate getPredicate(ItemStack stack, HolderGetter<Item> itemLookup) {
+		return ItemPredicate.Builder.item()
+				.of(itemLookup, stack.getItem())
+				.hasComponents(DataComponentPredicate.builder()
+						.expect(DataComponents.CUSTOM_NAME, Objects.requireNonNull(stack.get(DataComponents.CUSTOM_NAME))).build())
+				.build();
 	}
 
 	public static ResourceLocation modLoc(String path) {
