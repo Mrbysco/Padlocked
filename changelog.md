@@ -1,1 +1,1 @@
-* Add ability to unlock by shift right-clicking a locked chest with the key
+* Update to 1.21.4
