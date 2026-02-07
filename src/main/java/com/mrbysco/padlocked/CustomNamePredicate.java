@@ -2,7 +2,7 @@ package com.mrbysco.padlocked;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.critereon.SingleComponentItemPredicate;
+import net.minecraft.advancements.criterion.SingleComponentItemPredicate;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;

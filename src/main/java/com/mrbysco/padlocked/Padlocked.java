@@ -1,8 +1,8 @@
 package com.mrbysco.padlocked;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.advancements.critereon.DataComponentMatchers;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.DataComponentMatchers;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.component.DataComponents;
@@ -10,7 +10,7 @@ import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
@@ -22,9 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -41,9 +39,9 @@ public class Padlocked {
 
 	public static final DeferredRegister<DataComponentPredicate.Type<?>> COMPONENT_PREDICATES = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_PREDICATE_TYPE, MOD_ID);
 
-	public static final Supplier<DataComponentPredicate.Type<CustomNamePredicate>> CUSTOM_NAME = COMPONENT_PREDICATES.register("custom_name", () -> new DataComponentPredicate.Type<>(CustomNamePredicate.CODEC));
+	public static final Supplier<DataComponentPredicate.Type<CustomNamePredicate>> CUSTOM_NAME = COMPONENT_PREDICATES.register("custom_name", () -> new DataComponentPredicate.ConcreteType<>(CustomNamePredicate.CODEC));
 
-	public Padlocked(IEventBus eventBus, Dist dist, ModContainer container) {
+	public Padlocked(IEventBus eventBus) {
 		COMPONENT_PREDICATES.register(eventBus);
 
 		NeoForge.EVENT_BUS.addListener(this::onRightClick);
@@ -84,7 +82,7 @@ public class Padlocked {
 				.build();
 	}
 
-	public static ResourceLocation modLoc(String path) {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+	public static Identifier modLoc(String path) {
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 }
