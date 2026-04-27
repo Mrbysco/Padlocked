@@ -66,7 +66,7 @@ public class Padlocked {
 					if (player.isShiftKeyDown() && code.unlocksWith(itemStack)) {
 						containerBlockEntity.lockKey = LockCode.NO_LOCK;
 						level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
-						player.displayClientMessage(Component.translatable("padlocked.message.unlocked", containerBlockEntity.getDisplayName()), true);
+						player.sendOverlayMessage(Component.translatable("padlocked.message.unlocked", containerBlockEntity.getDisplayName()));
 					}
 				}
 			}

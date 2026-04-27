@@ -15,12 +15,12 @@ Allow for locking chests using named trial keys
 [[dependencies.padlocked]]
 modId="minecraft"
 type="required"
-versionRange="[1.21.7,1.22)"
+versionRange="[26.1.1,)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.padlocked]]
 modId="neoforge"
 type="required"
-versionRange="[21.7.0-beta,)"
+versionRange="[26.1.1.0-alpha,)"
 ordering="NONE"
 side="BOTH"
